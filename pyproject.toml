@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "EXPERIMENT_analysis"
+version = "0.1.0"
+description = "GADGET II experiment EXPERIMENT: run list, channel map, runs module and analysis scripts"
+requires-python = ">=3.11"
+dependencies = ["gadget_analysis>=0.1"]
+
+[tool.setuptools]
+packages = ["EXPERIMENT_analysis"]
+
+[tool.setuptools.package-data]
+# only needed for a non-editable install; `pip install -e .` uses the files in place
+EXPERIMENT_analysis = ["*.csv", "pad_gains/**/*.pkl", "tpc_processing_configs/*.csv"]

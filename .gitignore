@@ -1,0 +1,16 @@
+*.pyc
+__pycache__/
+*.egg-info/
+*.root
+*.pkl
+# pad gain maps are kept with the experiment
+!EXPERIMENT_analysis/pad_gains/**/*.pkl
+# caches (the library writes them to /egr/research-tpc/shared/proc_runs/EXPERIMENT/analysis_cache, never here)
+hist_cache/
+clarion_cache/
+cache_prune.*
+# calibrations are committed, except their ROOT files and the per-run PDFs
+**/calibrations/**/*.root
+**/calibrations/[0-9]*/**/*.pdf
+**/ai_review/**/cache/
+*.npz
