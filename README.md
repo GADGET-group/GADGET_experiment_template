@@ -49,7 +49,7 @@ placeholder in it, this README included, names your experiment, and the steps st
     until it prints `[]`.
 11. First processing, merge and histogram (`from gadget_analysis.tpc_data_processing import process_runs`,
     `from gadget_analysis.tpc_and_decay_station import ddas_interface`):
-    - process one GET run with a preset config: `process_runs.process_tpc_run('EXPERIMENT', get_run, 'smart1_veto2_rpr_fzp.csv')`
+    - process one GET run: `process_runs.process_tpc_run('EXPERIMENT', get_run)` uses `DEFAULT_TPC_CONFIG` from the runs module (`smart1.csv` in the template); pass a config name to try another preset
     - merge one DDAS run and read `run<N>_merge_v2.log` in the DDAS folder: `ddas_interface.make_ddas_root_file('EXPERIMENT', ddas_run)`
     - first histogram: `ddas_interface.get_histogram('EXPERIMENT', ddas_run, (8000, 0, 8000), 'h', 'clover 1a', 'clover_1a_e')`
 
@@ -68,7 +68,8 @@ placeholder in it, this README included, names your experiment, and the steps st
 `run_df` (pandas DataFrame from runs.csv, numeric `GET` and `DDAS` columns, one row per GET/DDAS pairing),
 `get_energy_MeV(get_runs, tpc_ini_filename="")`, `get_length_mm(get_runs, tpc_ini_filename="")`,
 `get_veto_mask(get_runs, tpc_ini_filename="")` (True = keep), `get_proton_mask(...)`, `get_alpha_mask(...)`,
-`get_pad_gains(tpc_ini_filename="")`; optional `get_pad_gain_path(tpc_ini_filename="")`. The data functions take
+`get_pad_gains(tpc_ini_filename="")`, `DEFAULT_TPC_CONFIG` (the processing config used when a call gives none);
+optional `get_pad_gain_path(tpc_ini_filename="")`. The data functions take
 `(get_runs, tpc_ini_filename="")` positionally, in that order; any experiment-specific option goes after a `*` as a
 keyword-only argument (`validate_experiment` checks this), so calls mean the same for every experiment. Paths inside
 the module relative to `Path(__file__).parent`, never the working directory; no degai calls at import time.

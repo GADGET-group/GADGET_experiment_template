@@ -33,6 +33,10 @@ bad_crystals = []
 # least recently read files are deleted, never ones read in the last CACHE_KEEP_DAYS (default 7) days.
 # Dry run / report: python -m gadget_analysis.tpc_and_decay_station.cache_maintenance EXPERIMENT
 CACHE_MAX_GB = 150
+
+# TODO(EXPERIMENT): the processing config that process_runs, ddas_interface and degai use when a call gives none
+# (a preset in the library's tpc_processing_configs/, or a file in this package's tpc_processing_configs/).
+DEFAULT_TPC_CONFIG = 'smart1.csv'
 # CACHE_KEEP_DAYS = 7
 # CACHE_DIR = '/some/other/folder'   # only to move the caches away from the shared default
 
