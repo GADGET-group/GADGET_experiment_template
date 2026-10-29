@@ -82,6 +82,9 @@ def get_DDAS_run_number(get_run_number):
     return run_df['DDAS'][run_df['GET']==get_run_number].iloc[0]
 
 
+# Runs-module convention (library README, "Runs-module interface"): the data functions take (get_run, tpc_ini_filename="")
+# positionally, in that order; experiment-specific options follow as keyword-only arguments (after the *). The library
+# calls them with the keyword tpc_ini_filename=, and validate_experiment checks the signatures.
 def get_veto_mask(get_run, tpc_ini_filename=""):
     '''True = keep: no veto pad above its threshold (ADC).'''
     # TODO(EXPERIMENT): veto thresholds per veto pad (e25058: 500 ADC on every veto pad, e23035: 200). Pad 509 is
@@ -118,13 +121,11 @@ def get_length_mm(get_run, tpc_ini_filename=""):
         get_run = [get_run]
     return process_runs.get_lengths(experiment, get_run, config_filename=tpc_ini_filename)
 
-def get_energy_MeV(get_run, tpc_ini_filename=""):
+def get_energy_MeV(get_run, tpc_ini_filename="", *, num_workers=1):
+    '''Gain-matched energy (MeV) per event, runs concatenated in order (get_gm_ic caches one .npy per run).'''
     if not is_iterable(get_run):
         get_run = [get_run]
-    to_return = []
-    for i in get_run:
-        to_return.append(process_runs.get_gm_ic(experiment, [i], get_pad_gains(tpc_ini_filename), config_filename=tpc_ini_filename))
-    return np.concatenate(to_return)
+    return process_runs.get_gm_ic(experiment, get_run, get_pad_gains(tpc_ini_filename), num_workers=num_workers, config_filename=tpc_ini_filename)
 
 def get_proton_mask_min_max_range(get_run, energies:np.ndarray):
     '''
@@ -152,12 +153,16 @@ def get_proton_mask_min_max_range(get_run, energies:np.ndarray):
     upper_band[energies<xb] = ya + (yb-ya)/(xb-xa)*(energies[energies<xb]-xa)
     return lower_band, upper_band
 
-def get_proton_mask(get_run, tpc_ini_filename=""):
+def get_proton_mask(get_run, tpc_ini_filename="", *, lengths=None, energy=None, veto_mask=None):
+    '''lengths / energy / veto_mask: pass precomputed arrays (from the functions above) to skip recomputing them.'''
     if not is_iterable(get_run):
         get_run = [get_run]
-    lengths = get_length_mm(get_run, tpc_ini_filename=tpc_ini_filename)
-    energy = get_energy_MeV(get_run, tpc_ini_filename=tpc_ini_filename)
-    veto_mask = get_veto_mask(get_run, tpc_ini_filename=tpc_ini_filename)
+    if lengths is None:
+        lengths = get_length_mm(get_run, tpc_ini_filename=tpc_ini_filename)
+    if energy is None:
+        energy = get_energy_MeV(get_run, tpc_ini_filename=tpc_ini_filename)
+    if veto_mask is None:
+        veto_mask = get_veto_mask(get_run, tpc_ini_filename=tpc_ini_filename)
     lower_band, upper_band = get_proton_mask_min_max_range(get_run, energy)
     return veto_mask & (lengths < upper_band) & (lengths > lower_band)
 
@@ -176,12 +181,16 @@ def get_alpha_mask_min_max_range(get_run, energies:np.ndarray):
     upper_band = np.min([lower_proton-10, expected_alpha_length + 30], axis=0)
     return lower_band, upper_band
 
-def get_alpha_mask(get_run, tpc_ini_filename=""):
+def get_alpha_mask(get_run, tpc_ini_filename="", *, lengths=None, energy=None, veto_mask=None):
+    '''lengths / energy / veto_mask: pass precomputed arrays (from the functions above) to skip recomputing them.'''
     if not is_iterable(get_run):
         get_run = [get_run]
-    lengths = get_length_mm(get_run, tpc_ini_filename=tpc_ini_filename)
-    energy = get_energy_MeV(get_run, tpc_ini_filename=tpc_ini_filename)
-    veto_mask = get_veto_mask(get_run, tpc_ini_filename=tpc_ini_filename)
+    if lengths is None:
+        lengths = get_length_mm(get_run, tpc_ini_filename=tpc_ini_filename)
+    if energy is None:
+        energy = get_energy_MeV(get_run, tpc_ini_filename=tpc_ini_filename)
+    if veto_mask is None:
+        veto_mask = get_veto_mask(get_run, tpc_ini_filename=tpc_ini_filename)
     lower_band, upper_band = get_alpha_mask_min_max_range(get_run, energy)
     return veto_mask & (lengths > lower_band) & (lengths < upper_band)
 

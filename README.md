@@ -68,8 +68,10 @@ placeholder in it, this README included, names your experiment, and the steps st
 `run_df` (pandas DataFrame from runs.csv, numeric `GET` and `DDAS` columns, one row per GET/DDAS pairing),
 `get_energy_MeV(get_runs, tpc_ini_filename="")`, `get_length_mm(get_runs, tpc_ini_filename="")`,
 `get_veto_mask(get_runs, tpc_ini_filename="")` (True = keep), `get_proton_mask(...)`, `get_alpha_mask(...)`,
-`get_pad_gains(tpc_ini_filename="")`; optional `get_pad_gain_path(tpc_ini_filename="")`. Paths inside the module
-relative to `Path(__file__).parent`, never the working directory; no degai calls at import time.
+`get_pad_gains(tpc_ini_filename="")`; optional `get_pad_gain_path(tpc_ini_filename="")`. The data functions take
+`(get_runs, tpc_ini_filename="")` positionally, in that order; any experiment-specific option goes after a `*` as a
+keyword-only argument (`validate_experiment` checks this), so calls mean the same for every experiment. Paths inside
+the module relative to `Path(__file__).parent`, never the working directory; no degai calls at import time.
 
 Settings the library reads from the module with `getattr`:
 
