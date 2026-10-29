@@ -8,7 +8,7 @@ repository root:
 python scripts/<name>.py
 ```
 
-Scripts import the library (`from tpc_data_processing import process_runs`, `from tpc_and_decay_station import
+Scripts import the library (`from gadget_analysis.tpc_data_processing import process_runs`, `from gadget_analysis.tpc_and_decay_station import
 ddas_interface`, ...) and the experiment package (`from EXPERIMENT_analysis import EXPERIMENT_runs`), both installed
 with `pip install -e`. `scripts/` is not a package: a script that imports another one, or an interactive driver
 that reloads one with `importlib`, is run as `python -m scripts.<name>` (or from IPython started in the repository

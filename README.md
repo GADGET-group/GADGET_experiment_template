@@ -45,10 +45,10 @@ placeholder in it, this README included, names your experiment, and the steps st
    `/egr/research-tpc/shared/proc_runs/EXPERIMENT/proc_pkl/` for the processed TPC files.
 9. `pip install -e .` in this repository, in the env that has the library installed (`pip install -e .` in the
    library checkout first).
-10. `python -c "from tpc_and_decay_station import ddas_interface; print(ddas_interface.validate_experiment('EXPERIMENT'))"`
+10. `python -c "from gadget_analysis.tpc_and_decay_station import ddas_interface; print(ddas_interface.validate_experiment('EXPERIMENT'))"`
     until it prints `[]`.
-11. First processing, merge and histogram (`from tpc_data_processing import process_runs`,
-    `from tpc_and_decay_station import ddas_interface`):
+11. First processing, merge and histogram (`from gadget_analysis.tpc_data_processing import process_runs`,
+    `from gadget_analysis.tpc_and_decay_station import ddas_interface`):
     - process one GET run with a preset config: `process_runs.process_tpc_run('EXPERIMENT', get_run, 'smart1_veto2_rpr_fzp.csv')`
     - merge one DDAS run and read `run<N>_merge_v2.log` in the DDAS folder: `ddas_interface.make_ddas_root_file('EXPERIMENT', ddas_run)`
     - first histogram: `ddas_interface.get_histogram('EXPERIMENT', ddas_run, (8000, 0, 8000), 'h', 'clover 1a', 'clover_1a_e')`
@@ -107,7 +107,7 @@ attributes above, the `run_df` columns, and that degai can build the crystal lis
 
 These are the default branches of the library's path functions (`process_runs.get_h5_path`, `get_save_path`,
 `ddas_interface.get_root_file_path`, `get_cache_dir`); an experiment that needs other folders needs a branch there
-(pull request). Report on the caches (dry run): `python -m tpc_and_decay_station.cache_maintenance EXPERIMENT`.
+(pull request). Report on the caches (dry run): `python -m gadget_analysis.tpc_and_decay_station.cache_maintenance EXPERIMENT`.
 
 ## Rules
 

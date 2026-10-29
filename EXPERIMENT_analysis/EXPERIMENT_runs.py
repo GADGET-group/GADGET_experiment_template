@@ -16,9 +16,9 @@ import numpy as np
 import ROOT
 from skimage.measure import points_in_poly
 
-from tpc_data_processing import process_runs
-from tpc_and_decay_station import ddas_interface
-from track_fitting import srim_interface, build_sim
+from gadget_analysis.tpc_data_processing import process_runs
+from gadget_analysis.tpc_and_decay_station import ddas_interface
+from gadget_analysis.track_fitting import srim_interface, build_sim
 
 # TODO(EXPERIMENT): the experiment name; it must match the package name EXPERIMENT_analysis (rename_experiment.py sets
 # both). The library also needs a branch for it in track_fitting/build_sim.get_gas_density (README.md, step 7).
@@ -31,7 +31,7 @@ bad_crystals = []
 # TODO(EXPERIMENT): budget for the shared caches (hist_cache/ + clarion_cache/ under
 # /egr/research-tpc/shared/proc_runs/EXPERIMENT/analysis_cache): when a new cache file takes the total above it, the
 # least recently read files are deleted, never ones read in the last CACHE_KEEP_DAYS (default 7) days.
-# Dry run / report: python -m tpc_and_decay_station.cache_maintenance EXPERIMENT
+# Dry run / report: python -m gadget_analysis.tpc_and_decay_station.cache_maintenance EXPERIMENT
 CACHE_MAX_GB = 150
 # CACHE_KEEP_DAYS = 7
 # CACHE_DIR = '/some/other/folder'   # only to move the caches away from the shared default
