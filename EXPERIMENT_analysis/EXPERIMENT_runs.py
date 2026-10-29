@@ -18,10 +18,10 @@ from skimage.measure import points_in_poly
 
 from gadget_analysis.tpc_data_processing import process_runs
 from gadget_analysis.tpc_and_decay_station import ddas_interface
-from gadget_analysis.track_fitting import srim_interface, build_sim
+from gadget_analysis.track_fitting import srim_interface
 
 # TODO(EXPERIMENT): the experiment name; it must match the package name EXPERIMENT_analysis (rename_experiment.py sets
-# both). The library also needs a branch for it in track_fitting/build_sim.get_gas_density (README.md, step 7).
+# both).
 experiment = 'EXPERIMENT'
 
 # TODO(EXPERIMENT): germanium crystals to leave out of degai's crystal list, as (clover number, crystal letter), for
@@ -38,6 +38,18 @@ CACHE_MAX_GB = 150
 # (a preset in the library's tpc_processing_configs/, or a file in this package's tpc_processing_configs/).
 DEFAULT_TPC_CONFIG = 'smart1.csv'
 # CACHE_KEEP_DAYS = 7
+
+# Counter gas: P10 at the operating pressure and temperature, the same for every run. Behind the SRIM range tables of
+# the particle-ID masks and used by track_fitting.build_sim.
+# TODO(EXPERIMENT): the pressure and temperature of this experiment (e23035 values below); make get_gas_density a
+# per-run lookup if they changed between runs.
+GAS_PRESSURE_TORR = 860.3
+GAS_TEMPERATURE_K = 20 + 273.15
+P10_DENSITY_REF = 1.5256    # mg/cm^3 at 300 K and 760 torr
+
+def get_gas_density(get_run=None):
+    '''Gas density in mg/cm^3 for the GET run(s): P10 scaled as an ideal gas from P10_DENSITY_REF (constant, so get_run is unused).'''
+    return P10_DENSITY_REF * (GAS_PRESSURE_TORR / 760) * (300. / GAS_TEMPERATURE_K)
 # CACHE_DIR = '/some/other/folder'   # only to move the caches away from the shared default
 
 current_dir = Path(__file__).parent.resolve()
@@ -141,7 +153,7 @@ def get_proton_mask_min_max_range(get_run, energies:np.ndarray):
     if not is_iterable(get_run):
         get_run = [get_run]
     stopping_power_path = 'track_fitting/stopping_powers/%s_in_%s.txt'%('1H', 'P10')
-    proton_srim_table = srim_interface.SRIM_Table(stopping_power_path, build_sim.get_gas_density(experiment, get_run[0]))
+    proton_srim_table = srim_interface.SRIM_Table(stopping_power_path, get_gas_density(get_run[0]))
     expected_proton_length = proton_srim_table.get_stopping_distance(energies)
     lower_band = expected_proton_length - 37
     upper_band = expected_proton_length + 20
@@ -178,7 +190,7 @@ def get_alpha_mask_min_max_range(get_run, energies:np.ndarray):
     if not is_iterable(get_run):
         get_run = [get_run]
     stopping_power_path = 'track_fitting/stopping_powers/%s_in_%s.txt'%('4He', 'P10')
-    alpha_srim_table = srim_interface.SRIM_Table(stopping_power_path, build_sim.get_gas_density(experiment, get_run[0]))
+    alpha_srim_table = srim_interface.SRIM_Table(stopping_power_path, get_gas_density(get_run[0]))
     expected_alpha_length = alpha_srim_table.get_stopping_distance(energies)
     lower_band = np.zeros(len(energies))
     lower_proton, upper_proton = get_proton_mask_min_max_range(get_run, energies)

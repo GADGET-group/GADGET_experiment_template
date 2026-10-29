@@ -35,10 +35,10 @@ placeholder in it, this README included, names your experiment, and the steps st
    - the PID polygons and variables in `get_pid_cut` and `get_counts_in_pid_cut`.
 6. Pad gains: copy a map into `EXPERIMENT_analysis/pad_gains/` (`pad_gains/README.md`: start from e23035's
    `hybrid_v200_fft6_res3.pkl`, make your own later).
-7. Gas density: add a branch for `'EXPERIMENT'` to `track_fitting/build_sim.get_gas_density` in the library, by pull
-   request to `gadget_analysis`. It asserts for unknown experiments, and the proton and alpha masks need it
-   (e23035 and e25058: P10 at 860.3 torr, 20 C). The library README lists its other experiment-specific constants
-   (mesh-to-trigger delay of the DDAS merge, `zscale`, paths on hosts other than tpcgpu).
+7. Gas density: set `GAS_PRESSURE_TORR` and `GAS_TEMPERATURE_K` in `EXPERIMENT_runs.py` (`get_gas_density`; make it a
+   per-run lookup if they changed during the experiment). The proton and alpha masks and `track_fitting.build_sim`
+   use it; e23035 and e25058 ran P10 at 860.3 torr, 20 C. The library README lists the experiment-specific constants
+   that still live in the library (mesh-to-trigger delay of the DDAS merge, `zscale`, paths on hosts other than tpcgpu).
 8. Put the data in the standard folders on tpcgpu: raw GET files in
    `/egr/research-tpc/shared/experiments/EXPERIMENT/h5/run_NNNN.h5`, the DDAS event-builder files in
    `/egr/research-tpc/shared/proc_runs/EXPERIMENT/ddas/run-NNNN.root`, and create
