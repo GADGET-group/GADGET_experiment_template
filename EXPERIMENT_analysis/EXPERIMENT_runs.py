@@ -118,19 +118,19 @@ GAIN_MATCH_DIR = os.path.join(current_dir, 'pad_gains')   # pad gain maps kept w
 
 def get_pad_gain_path(tpc_ini_filename=""):
     '''
-    Pad gain map for a TPC processing config (also the provenance string stored with the friend trees).
-    TODO(EXPERIMENT): put the map(s) in pad_gains/ (pad_gains/README.md) and choose them here. One map for every
-    config is fine to start. e23035 and e25058 pick by the config's main baseline:
-        if process_runs.get_config_background_mode(tpc_ini_filename, experiment=experiment) == 'smart':
-            return os.path.join(GAIN_MATCH_DIR, 'hybrid_v200_fft6_res3.pkl')   # smart1 / hybrid configs
-        return os.path.join(GAIN_MATCH_DIR, 'gm_old', 'fft6_res3.pkl')          # smart2 configs
+    Pad gain map of a TPC processing config: the config's pad_gain_file row, a path relative to pad_gains/ (an absolute
+    path is taken as it is); a config without the row raises. The library presets name hybrid_v200_fft6_res3.pkl
+    (smart1-based configs) and gm_old/fft6_res3.pkl (smart2 configs).
+    TODO(EXPERIMENT): put the map(s) in pad_gains/ under those names (pad_gains/README.md: start from e23035's), or
+    copy a preset into tpc_processing_configs/ under a new name with your own map in its pad_gain_file row. Friend
+    trees, gm_ic caches and histograms are kept apart by the config name, and ddas_interface.check_friend_provenance
+    refuses a friend tree made with other gains, so gain maps can be compared side by side.
     '''
-    return os.path.join(GAIN_MATCH_DIR, 'hybrid_v200_fft6_res3.pkl')
+    return process_runs.get_config_pad_gain_file(experiment, tpc_ini_filename, base_dir=GAIN_MATCH_DIR)
 
 def get_pad_gains(tpc_ini_filename=""):
-    with open(get_pad_gain_path(tpc_ini_filename), 'rb') as f:
-        gain_match_result = pickle.load(f)
-    return gain_match_result.pad_gains
+    '''One gain per pad from the map get_pad_gain_path names; get_energy_MeV multiplies the per-pad charges by them.'''
+    return process_runs.load_pad_gains(get_pad_gain_path(tpc_ini_filename))
 
 def get_length_mm(get_run, tpc_ini_filename=""):
     if not is_iterable(get_run):

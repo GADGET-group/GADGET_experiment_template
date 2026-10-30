@@ -30,11 +30,14 @@ placeholder in it, this README included, names your experiment, and the steps st
    - `CACHE_MAX_GB` (150; optionally `CACHE_KEEP_DAYS`, `CACHE_DIR`);
    - the run selectors in `get_ddas_runs` (a placeholder);
    - the veto thresholds in `get_veto_mask`;
-   - the pad gain map in `get_pad_gain_path`;
+   - the pad gain map: nothing to edit in `get_pad_gain_path`, each config names its map in a `pad_gain_file` row
+     (step 6);
    - the PID bands in `get_proton_mask_min_max_range` and `get_alpha_mask_min_max_range`;
    - the PID polygons and variables in `get_pid_cut` and `get_counts_in_pid_cut`.
-6. Pad gains: copy a map into `EXPERIMENT_analysis/pad_gains/` (`pad_gains/README.md`: start from e23035's
-   `hybrid_v200_fft6_res3.pkl`, make your own later).
+6. Pad gains: copy the maps the presets name into `EXPERIMENT_analysis/pad_gains/` (`pad_gains/README.md`: e23035's
+   `hybrid_v200_fft6_res3.pkl` for the smart1-based presets, `gm_old/fft6_res3.pkl` for the smart2 ones). A map of
+   your own gets a config of its own: a copy of a preset in `tpc_processing_configs/` with the map in its
+   `pad_gain_file` row.
 7. Gas density: set `GAS_PRESSURE_TORR` and `GAS_TEMPERATURE_K` in `EXPERIMENT_runs.py` (`get_gas_density`; make it a
    per-run lookup if they changed during the experiment). The proton and alpha masks and `track_fitting.build_sim`
    use it; e23035 and e25058 ran P10 at 860.3 torr, 20 C. The library README lists the experiment-specific constants
@@ -69,7 +72,8 @@ placeholder in it, this README included, names your experiment, and the steps st
 `get_energy_MeV(get_runs, tpc_ini_filename="")`, `get_length_mm(get_runs, tpc_ini_filename="")`,
 `get_veto_mask(get_runs, tpc_ini_filename="")` (True = keep), `get_proton_mask(...)`, `get_alpha_mask(...)`,
 `get_pad_gains(tpc_ini_filename="")`, `DEFAULT_TPC_CONFIG` (the processing config used when a call gives none);
-optional `get_pad_gain_path(tpc_ini_filename="")`. The data functions take
+optional `get_pad_gain_path(tpc_ini_filename="")` (both read the config's `pad_gain_file` row through
+`process_runs.get_config_pad_gain_file`). The data functions take
 `(get_runs, tpc_ini_filename="")` positionally, in that order; any experiment-specific option goes after a `*` as a
 keyword-only argument (`validate_experiment` checks this), so calls mean the same for every experiment. Paths inside
 the module relative to `Path(__file__).parent`, never the working directory; no degai calls at import time.
